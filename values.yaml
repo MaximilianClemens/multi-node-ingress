@@ -68,7 +68,7 @@ ingressControllers:
         port: 8080
         protocol: TCP
         targetPort: 8080
-        nodePort: 38080
+        nodePort: 32080
       - name: dns53
         port: 53
         protocol: UDP
@@ -122,9 +122,9 @@ ingressServices:
 
   # API Service - nur auf privatem node01
   - name: "api-service"
-    namespace: "api"
+    namespace: "default"  # Verwende default namespace für Demo
     port: 8080
-    enabled: true
+    enabled: false  # Deaktiviert da Service nicht existiert
     ingressControllers:
       - node01-private
     hosts:
@@ -136,7 +136,7 @@ ingressServices:
 
   # Monitoring - läuft auf beiden privaten Controllern
   - name: "grafana"
-    namespace: "monitoring"
+    namespace: "default"  # Verwende default namespace für Demo
     port: 3000
     enabled: false  # Deaktiviert da Service nicht existiert
     ingressControllers:

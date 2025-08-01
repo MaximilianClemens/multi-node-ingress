@@ -23,8 +23,6 @@ spec:
         app.kubernetes.io/name: ingress-nginx
         app.kubernetes.io/instance: {{ include "ingress.instanceName" $controllerName }}
         app.kubernetes.io/component: controller
-        {{- include "multi-node-ingress.labels" $ | nindent 8 }}
-        ingress.controller: {{ $controllerName }}
     spec:
       serviceAccountName: nginx-ingress-serviceaccount
       nodeSelector:

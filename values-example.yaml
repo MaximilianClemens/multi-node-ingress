@@ -74,7 +74,7 @@ ingressControllers:
         port: 8080
         protocol: TCP
         targetPort: 8080
-        nodePort: 38080
+        nodePort: 32080
       - name: dns53
         port: 53
         protocol: UDP
