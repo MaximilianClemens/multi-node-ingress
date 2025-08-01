@@ -1,0 +1,169 @@
+# Beispiel values.yaml für Production Setup
+# Kopiere diese Datei nach values-production.yaml und passe sie an
+
+global:
+  imageRegistry: "registry.k8s.io"
+  ingressImage: "ingress-nginx/controller:v1.10.0"
+
+# Definiere deine Ingress Controller
+ingressControllers:
+  # Öffentlicher Zugang auf Node01
+  node01-public:
+    enabled: true
+    node: "worker-01"              # Dein Node Name
+    ip: "185.0.0.1"               # Deine öffentliche IP
+    namespace: "ingress-node01-public"
+    ingressClass: "node01-public"
+    controllerClass: "k8s.io/ingress-nginx-node01-public"
+    electionId: "ingress-controller-leader-node01-public"
+    ports:
+      - name: http
+        port: 80
+        protocol: TCP
+        targetPort: 80
+        nodePort: 30080
+      - name: https
+        port: 443
+        protocol: TCP
+        targetPort: 443
+        nodePort: 30443
+
+  # Öffentlicher Zugang auf Node02 (optional)
+  node02-public:
+    enabled: false                # Deaktiviert wenn nur ein Node
+    node: "worker-02"
+    ip: "185.0.0.2"
+    namespace: "ingress-node02-public"
+    ingressClass: "node02-public"
+    controllerClass: "k8s.io/ingress-nginx-node02-public"
+    electionId: "ingress-controller-leader-node02-public"
+    ports:
+      - name: http
+        port: 80
+        protocol: TCP
+        targetPort: 80
+        nodePort: 30081
+      - name: https
+        port: 443
+        protocol: TCP
+        targetPort: 443
+        nodePort: 30444
+
+  # Private/Interne Services
+  node01-private:
+    enabled: true
+    node: "worker-01"
+    ip: "10.0.1.100"              # Deine private IP
+    namespace: "ingress-node01-private"
+    ingressClass: "node01-private"
+    controllerClass: "k8s.io/ingress-nginx-node01-private"
+    electionId: "ingress-controller-leader-node01-private"
+    ports:
+      - name: http
+        port: 80
+        protocol: TCP
+        targetPort: 80
+        nodePort: 30082
+      - name: https
+        port: 443
+        protocol: TCP
+        targetPort: 443
+        nodePort: 30445
+      # Zusätzliche Ports für spezielle Services
+      - name: api8080
+        port: 8080
+        protocol: TCP
+        targetPort: 8080
+        nodePort: 38080
+      - name: dns53
+        port: 53
+        protocol: UDP
+        targetPort: 53
+        nodePort: 30053
+
+nginx:
+  config:
+    useForwardedHeaders: "true"
+    computeFullForwardedFor: "true"
+    useProxyProtocol: "false"
+
+# Deine Services
+ingressServices:
+  # WordPress Blog - öffentlich auf beiden Nodes
+  - name: "wordpress"
+    namespace: "wordpress"
+    port: 80
+    enabled: true
+    ingressControllers:
+      - node01-public
+      - node02-public              # Nur wenn node02-public enabled
+    hosts:
+      - "blog.example.com"
+      - "www.blog.example.com"
+    annotations:
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+      cert-manager.io/cluster-issuer: "letsencrypt-prod"
+
+  # API Service - öffentlich und privat
+  - name: "api-service"
+    namespace: "api"
+    port: 8080
+    enabled: true
+    ingressControllers:
+      - node01-public              # Öffentlicher Zugang
+      - node01-private             # Interner Zugang über Port 8080
+    hosts:
+      - "api.example.com"          # Öffentlich
+      - "api.internal.example.com" # Privat
+    annotations:
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/rate-limit: "100"
+      nginx.ingress.kubernetes.io/rate-limit-window: "1m"
+
+  # Monitoring Dashboard - nur privat
+  - name: "grafana"
+    namespace: "monitoring"
+    port: 3000
+    enabled: true
+    ingressControllers:
+      - node01-private
+    hosts:
+      - "grafana.internal.example.com"
+    annotations:
+      nginx.ingress.kubernetes.io/auth-type: basic
+      nginx.ingress.kubernetes.io/auth-secret: grafana-basic-auth
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+
+  # PowerDNS Admin - nur privat
+  - name: "powerdns-admin"
+    namespace: "powerdns"
+    port: 80
+    enabled: true
+    ingressControllers:
+      - node01-private
+    hosts:
+      - "dns-admin.internal.example.com"
+    annotations:
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+
+  # E-Commerce Shop - hochverfügbar auf mehreren Nodes
+  - name: "shop"
+    namespace: "ecommerce"
+    port: 80
+    enabled: true
+    ingressControllers:
+      - node01-public
+      - node02-public
+    hosts:
+      - "shop.example.com"
+      - "www.shop.example.com"
+      - "store.example.com"
+    annotations:
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/rate-limit: "200"
+      nginx.ingress.kubernetes.io/rate-limit-window: "1m"
+      cert-manager.io/cluster-issuer: "letsencrypt-prod"
+
+# Demo App deaktivieren für Production
+demoApp:
+  enabled: false

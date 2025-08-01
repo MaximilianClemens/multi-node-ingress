@@ -1,0 +1,155 @@
+# Globale Einstellungen
+global:
+  imageRegistry: "registry.k8s.io"
+  ingressImage: "ingress-nginx/controller:v1.10.0"
+
+# Ingress Controller Definitionen
+ingressControllers:
+  node01-public:
+    enabled: true
+    node: "node01"
+    ip: "91.99.151.211"
+    namespace: "ingress-node01-public"
+    ingressClass: "node01-public"
+    controllerClass: "k8s.io/ingress-nginx-node01-public"
+    electionId: "ingress-controller-leader-node01-public"
+    ports:
+      - name: http
+        port: 80
+        protocol: TCP
+        targetPort: 80
+        nodePort: 30080
+      - name: https
+        port: 443
+        protocol: TCP
+        targetPort: 443
+        nodePort: 30443
+
+  node02-public:
+    enabled: true
+    node: "node02"
+    ip: "188.245.217.191"
+    namespace: "ingress-node02-public"
+    ingressClass: "node02-public"
+    controllerClass: "k8s.io/ingress-nginx-node02-public"
+    electionId: "ingress-controller-leader-node02-public"
+    ports:
+      - name: http
+        port: 80
+        protocol: TCP
+        targetPort: 80
+        nodePort: 30081
+      - name: https
+        port: 443
+        protocol: TCP
+        targetPort: 443
+        nodePort: 30444
+
+  node01-private:
+    enabled: true
+    node: "node01"
+    ip: "10.0.1.16"
+    namespace: "ingress-node01-private"
+    ingressClass: "node01-private"
+    controllerClass: "k8s.io/ingress-nginx-node01-private"
+    electionId: "ingress-controller-leader-node01-private"
+    ports:
+      - name: http
+        port: 80
+        protocol: TCP
+        targetPort: 80
+        nodePort: 30082
+      - name: https
+        port: 443
+        protocol: TCP
+        targetPort: 443
+        nodePort: 30445
+      - name: http8080
+        port: 8080
+        protocol: TCP
+        targetPort: 8080
+        nodePort: 38080
+      - name: dns53
+        port: 53
+        protocol: UDP
+        targetPort: 53
+        nodePort: 30053
+
+  node02-private:
+    enabled: true
+    node: "node02"
+    ip: "10.0.1.17"
+    namespace: "ingress-node02-private"
+    ingressClass: "node02-private"
+    controllerClass: "k8s.io/ingress-nginx-node02-private"
+    electionId: "ingress-controller-leader-node02-private"
+    ports:
+      - name: http
+        port: 80
+        protocol: TCP
+        targetPort: 80
+        nodePort: 30083
+      - name: https
+        port: 443
+        protocol: TCP
+        targetPort: 443
+        nodePort: 30446
+
+# NGINX Konfiguration
+nginx:
+  config:
+    useForwardedHeaders: "true"
+    computeFullForwardedFor: "true"
+    useProxyProtocol: "false"
+
+# Service Definitionen mit dynamischer Controller-Bindung
+ingressServices:
+  # Demo App - läuft auf beiden öffentlichen Controllern
+  - name: "demo-app"
+    namespace: "default"
+    port: 80
+    enabled: true
+    ingressControllers:
+      - node01-public
+      - node02-public
+    hosts:
+      - "demo.kube.gamma.red"
+      - "node01.kube.gamma.red"  # Wird nur bei node01-public verwendet
+      - "node02.kube.gamma.red"  # Wird nur bei node02-public verwendet
+    annotations:
+      nginx.ingress.kubernetes.io/rewrite-target: /
+      nginx.ingress.kubernetes.io/upstream-hash-by: "$remote_addr"
+
+  # API Service - nur auf privatem node01
+  - name: "api-service"
+    namespace: "api"
+    port: 8080
+    enabled: true
+    ingressControllers:
+      - node01-private
+    hosts:
+      - "api.internal.example.com"
+    annotations:
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/rate-limit: "100"
+      nginx.ingress.kubernetes.io/rate-limit-window: "1m"
+
+  # Monitoring - läuft auf beiden privaten Controllern
+  - name: "grafana"
+    namespace: "monitoring"
+    port: 3000
+    enabled: false  # Deaktiviert da Service nicht existiert
+    ingressControllers:
+      - node01-private
+      - node02-private
+    hosts:
+      - "grafana.internal.example.com"
+    annotations:
+      nginx.ingress.kubernetes.io/auth-type: basic
+      nginx.ingress.kubernetes.io/auth-secret: grafana-basic-auth
+
+# Demo Application (wird automatisch erstellt wenn in ingressServices referenziert)
+demoApp:
+  enabled: true
+  replicas: 4
+  image: "nginx:alpine"

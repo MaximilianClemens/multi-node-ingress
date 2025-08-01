@@ -1,0 +1,86 @@
+🚀 Multi-Node Ingress Controller erfolgreich installiert!
+
+Verfügbare Ingress Controller:
+{{- range $controllerName, $controller := .Values.ingressControllers }}
+{{- if $controller.enabled }}
+
+📡 {{ $controllerName }}:
+  - Node: {{ $controller.node }}
+  - IP: {{ $controller.ip }}
+  - Namespace: {{ $controller.namespace }}
+  - IngressClass: {{ $controller.ingressClass }}
+  - Endpoints:
+    {{- range $controller.ports }}
+    {{- if or (eq .name "http") (eq .name "https") }}
+    • {{ .name | upper }}: {{ $controller.ip }}:{{ .nodePort }}
+    {{- else }}
+    • {{ .name | upper }}: {{ $controller.ip }}:{{ .nodePort }} ({{ .protocol }})
+    {{- end }}
+    {{- end }}
+{{- end }}
+{{- end }}
+
+🌐 Deployierte Services:
+{{- range .Values.ingressServices }}
+{{- if .enabled }}
+
+📦 {{ .name }} ({{ .namespace }}):
+  - Port: {{ .port }}
+  - Hosts: {{ join ", " .hosts }}
+  - Controller: {{ join ", " .ingressControllers }}
+  - Zugriff über:
+    {{- range .ingressControllers }}
+    {{- $controllerName := . }}
+    {{- $controller := index $.Values.ingressControllers $controllerName }}
+    {{- if $controller.enabled }}
+    {{- range $controller.ports }}
+    {{- if or (eq .name "http") (eq .name "https") }}
+    • {{ .name | upper }}: {{ $controller.ip }}:{{ .nodePort }}
+    {{- end }}
+    {{- end }}
+    {{- end }}
+    {{- end }}
+{{- end }}
+{{- end }}
+
+🔧 Verwaltungsbefehle:
+
+Status prüfen:
+  kubectl get pods --all-namespaces -l app.kubernetes.io/name=ingress-nginx
+  kubectl get ingress --all-namespaces
+  kubectl get ingressclass
+
+Logs anzeigen:
+{{- range $controllerName, $controller := .Values.ingressControllers }}
+{{- if $controller.enabled }}
+  kubectl logs -n {{ $controller.namespace }} -l app.kubernetes.io/component=controller
+{{- end }}
+{{- end }}
+
+Service hinzufügen:
+1. Erweitern Sie die ingressServices in values.yaml:
+   ingressServices:
+     - name: "my-new-service"
+       namespace: "default"
+       port: 80
+       enabled: true
+       ingressControllers:
+         - node01-public  # Oder beliebige andere Controller
+       hosts:
+         - "my-app.example.com"
+       annotations:
+         nginx.ingress.kubernetes.io/ssl-redirect: "true"
+
+2. Chart upgraden:
+   helm upgrade {{ .Release.Name }} . -f values.yaml
+
+Controller hinzufügen:
+1. Neuen Controller in ingressControllers definieren
+2. Services können dynamisch an neue Controller gebunden werden
+3. helm upgrade ausführen
+
+💡 Tipps:
+- Jeder Service kann an mehrere Controller gebunden werden
+- Controller können verschiedene Ports und Protokolle unterstützen
+- Private und öffentliche Trennung über verschiedene Controller
+- Automatische IP-basierte und Host-basierte Routen

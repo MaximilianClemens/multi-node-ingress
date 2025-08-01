@@ -1,0 +1,14 @@
+{{- range $controllerName, $controller := .Values.ingressControllers }}
+{{- if $controller.enabled }}
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ $controller.namespace }}
+  labels:
+    {{- include "multi-node-ingress.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: namespace
+    ingress.controller: {{ $controllerName }}
+    ingress.node: {{ $controller.node }}
+{{- end }}
+{{- end }}

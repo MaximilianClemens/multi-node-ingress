@@ -1,0 +1,50 @@
+{{- range $controllerName, $controller := .Values.ingressControllers }}
+{{- if $controller.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-configuration
+  namespace: {{ $controller.namespace }}
+  labels:
+    {{- include "multi-node-ingress.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: configmap
+    ingress.controller: {{ $controllerName }}
+data:
+  use-forwarded-headers: {{ $.Values.nginx.config.useForwardedHeaders | quote }}
+  compute-full-forwarded-for: {{ $.Values.nginx.config.computeFullForwardedFor | quote }}
+  use-proxy-protocol: {{ $.Values.nginx.config.useProxyProtocol | quote }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tcp-services
+  namespace: {{ $controller.namespace }}
+  labels:
+    {{- include "multi-node-ingress.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: configmap
+    ingress.controller: {{ $controllerName }}
+data: 
+  {{- range $controller.ports }}
+  {{- if and (ne .name "http") (ne .name "https") (eq .protocol "TCP") }}
+  {{ .nodePort }}: "{{ $.Values.ingressServices | first | index "namespace" }}/service-name:{{ .targetPort }}"
+  {{- end }}
+  {{- end }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: udp-services
+  namespace: {{ $controller.namespace }}
+  labels:
+    {{- include "multi-node-ingress.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: configmap
+    ingress.controller: {{ $controllerName }}
+data: 
+  {{- range $controller.ports }}
+  {{- if eq .protocol "UDP" }}
+  {{ .nodePort }}: "{{ $.Values.ingressServices | first | index "namespace" }}/service-name:{{ .targetPort }}"
+  {{- end }}
+  {{- end }}
+{{- end }}
+{{- end }}

@@ -1,0 +1,133 @@
+# ServiceAccounts
+{{- range $controllerName, $controller := .Values.ingressControllers }}
+{{- if $controller.enabled }}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: nginx-ingress-serviceaccount
+  namespace: {{ $controller.namespace }}
+  labels:
+    {{- include "multi-node-ingress.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: serviceaccount
+    ingress.controller: {{ $controllerName }}
+{{- end }}
+{{- end }}
+
+---
+# ClusterRole (einmal für alle)
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: nginx-ingress-clusterrole
+  labels:
+    {{- include "multi-node-ingress.labels" . | nindent 4 }}
+    app.kubernetes.io/component: clusterrole
+rules:
+- apiGroups: [""]
+  resources: ["configmaps", "endpoints", "nodes", "pods", "secrets", "namespaces"]
+  verbs: ["list", "watch", "get"]
+- apiGroups: [""]
+  resources: ["services"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["events"]
+  verbs: ["create", "patch"]
+- apiGroups: ["extensions", "networking.k8s.io"]
+  resources: ["ingresses"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["extensions", "networking.k8s.io"]
+  resources: ["ingresses/status"]
+  verbs: ["update"]
+- apiGroups: ["networking.k8s.io"]
+  resources: ["ingressclasses"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["configmaps"]
+  resourceNames: ["ingress-controller-leader"]
+  verbs: ["get", "update"]
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["create"]
+- apiGroups: ["coordination.k8s.io"]
+  resources: ["leases"]
+  verbs: ["create", "update", "get", "list", "watch"]
+- apiGroups: ["discovery.k8s.io"]
+  resources: ["endpointslices"]
+  verbs: ["list", "watch", "get"]
+
+# Namespace-spezifische Roles
+{{- range $controllerName, $controller := .Values.ingressControllers }}
+{{- if $controller.enabled }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: nginx-ingress-role
+  namespace: {{ $controller.namespace }}
+  labels:
+    {{- include "multi-node-ingress.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: role
+    ingress.controller: {{ $controllerName }}
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["get", "list", "watch", "create", "update", "patch"]
+- apiGroups: [""]
+  resources: ["endpoints"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["events"]
+  verbs: ["create", "patch"]
+{{- end }}
+{{- end }}
+
+# ClusterRoleBindings
+{{- range $controllerName, $controller := .Values.ingressControllers }}
+{{- if $controller.enabled }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: nginx-ingress-clusterrole-binding-{{ $controllerName }}
+  labels:
+    {{- include "multi-node-ingress.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: clusterrolebinding
+    ingress.controller: {{ $controllerName }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: nginx-ingress-clusterrole
+subjects:
+- kind: ServiceAccount
+  name: nginx-ingress-serviceaccount
+  namespace: {{ $controller.namespace }}
+{{- end }}
+{{- end }}
+
+# RoleBindings
+{{- range $controllerName, $controller := .Values.ingressControllers }}
+{{- if $controller.enabled }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: nginx-ingress-role-binding
+  namespace: {{ $controller.namespace }}
+  labels:
+    {{- include "multi-node-ingress.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: rolebinding
+    ingress.controller: {{ $controllerName }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: nginx-ingress-role
+subjects:
+- kind: ServiceAccount
+  name: nginx-ingress-serviceaccount
+  namespace: {{ $controller.namespace }}
+{{- end }}
+{{- end }}

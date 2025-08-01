@@ -1,0 +1,52 @@
+# Generiere Ingress Ressourcen für alle Services und ihre zugewiesenen Controller
+{{- range .Values.ingressServices }}
+{{- $service := . }}
+{{- if $service.enabled }}
+{{- range $service.ingressControllers }}
+{{- $controllerName := . }}
+{{- $controller := index $.Values.ingressControllers $controllerName }}
+{{- if $controller.enabled }}
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ $service.name }}-{{ $controllerName }}
+  namespace: {{ $service.namespace }}
+  labels:
+    {{- include "multi-node-ingress.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: ingress
+    ingress.controller: {{ $controllerName }}
+    service.name: {{ $service.name }}
+  annotations:
+    {{- with $service.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  ingressClassName: {{ $controller.ingressClass }}
+  rules:
+  {{- range $service.hosts }}
+  - host: {{ . }}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $service.name }}
+            port:
+              number: {{ $service.port }}
+  {{- end }}
+  # IP-basierter Zugriff über Controller IP
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ $service.name }}
+            port:
+              number: {{ $service.port }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}

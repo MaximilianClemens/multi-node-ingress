@@ -1,0 +1,24 @@
+{{- range $controllerName, $controller := .Values.ingressControllers }}
+{{- if $controller.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ingress-nginx-controller
+  namespace: {{ $controller.namespace }}
+  labels:
+    {{- include "multi-node-ingress.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: controller
+    ingress.controller: {{ $controllerName }}
+spec:
+  type: NodePort
+  ports:
+  {{- include "controller.allPorts" $controller | nindent 2 }}
+  selector:
+    app.kubernetes.io/name: ingress-nginx
+    app.kubernetes.io/instance: {{ include "ingress.instanceName" $controllerName }}
+    app.kubernetes.io/component: controller
+  externalIPs:
+  - {{ $controller.ip }}
+{{- end }}
+{{- end }}
