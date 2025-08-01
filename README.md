@@ -1,3 +1,6 @@
+# Yes, this is LLM generated Code, keep scrolling
+nothing to see here
+
 # Multi-Node Ingress Helm Chart
 
 Ein flexibles Helm Chart für NGINX Ingress Controller mit dynamischer Service-zu-Controller Bindung.
