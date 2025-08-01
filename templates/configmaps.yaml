@@ -24,12 +24,9 @@ metadata:
     {{- include "multi-node-ingress.labels" $ | nindent 4 }}
     app.kubernetes.io/component: configmap
     ingress.controller: {{ $controllerName }}
-data: 
-  {{- range $controller.ports }}
-  {{- if and (ne .name "http") (ne .name "https") (eq .protocol "TCP") }}
-  {{ .nodePort }}: "{{ $.Values.ingressServices | first | index "namespace" }}/service-name:{{ .targetPort }}"
-  {{- end }}
-  {{- end }}
+data: {}
+  # TCP Services werden hier konfiguriert wenn benötigt
+  # Format: "nodePort": "namespace/service-name:port"
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -40,11 +37,8 @@ metadata:
     {{- include "multi-node-ingress.labels" $ | nindent 4 }}
     app.kubernetes.io/component: configmap
     ingress.controller: {{ $controllerName }}
-data: 
-  {{- range $controller.ports }}
-  {{- if eq .protocol "UDP" }}
-  {{ .nodePort }}: "{{ $.Values.ingressServices | first | index "namespace" }}/service-name:{{ .targetPort }}"
-  {{- end }}
-  {{- end }}
+data: {}
+  # UDP Services werden hier konfiguriert wenn benötigt
+  # Format: "nodePort": "namespace/service-name:port"
 {{- end }}
 {{- end }}
