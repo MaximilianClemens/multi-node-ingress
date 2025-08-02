@@ -107,12 +107,13 @@ ingressServices:
   # ArgoCD Server - läuft auf öffentlichem Controller
   - name: "argocd-server"
     namespace: "argocd"
-    port: 80
+    port: 443  # HTTPS Port für ArgoCD
     enabled: true
     ingressControllers:
       - node02-public
     hosts:
       - "node02.kube.gamma.red"
     annotations:
-      nginx.ingress.kubernetes.io/rewrite-target: /
-      nginx.ingress.kubernetes.io/upstream-hash-by: "$remote_addr"
+      nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+      nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+      cert-manager.io/cluster-issuer: "letsencrypt-prod-node02-public"

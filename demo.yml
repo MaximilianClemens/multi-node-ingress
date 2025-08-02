@@ -1,0 +1,1331 @@
+---
+# Source: multi-node-ingress/templates/namespaces.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ingress-node01-private
+  labels:
+    helm.sh/chart: multi-node-ingress-0.1.0
+    app.kubernetes.io/name: multi-node-ingress
+    app.kubernetes.io/instance: my-ingress
+    app.kubernetes.io/version: "1.10.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: namespace
+    ingress.controller: node01-private
+    ingress.node: node01
+---
+# Source: multi-node-ingress/templates/namespaces.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ingress-node01-public
+  labels:
+    helm.sh/chart: multi-node-ingress-0.1.0
+    app.kubernetes.io/name: multi-node-ingress
+    app.kubernetes.io/instance: my-ingress
+    app.kubernetes.io/version: "1.10.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: namespace
+    ingress.controller: node01-public
+    ingress.node: node01
+---
+# Source: multi-node-ingress/templates/namespaces.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ingress-node02-private
+  labels:
+    helm.sh/chart: multi-node-ingress-0.1.0
+    app.kubernetes.io/name: multi-node-ingress
+    app.kubernetes.io/instance: my-ingress
+    app.kubernetes.io/version: "1.10.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: namespace
+    ingress.controller: node02-private
+    ingress.node: node02
+---
+# Source: multi-node-ingress/templates/namespaces.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ingress-node02-public
+  labels:
+    helm.sh/chart: multi-node-ingress-0.1.0
+    app.kubernetes.io/name: multi-node-ingress
+    app.kubernetes.io/instance: my-ingress
+    app.kubernetes.io/version: "1.10.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: namespace
+    ingress.controller: node02-public
+    ingress.node: node02
+---
+# Source: multi-node-ingress/templates/rbac.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: nginx-ingress-serviceaccount
+  namespace: ingress-node01-private
+  labels:
+    helm.sh/chart: multi-node-ingress-0.1.0
+    app.kubernetes.io/name: multi-node-ingress
+    app.kubernetes.io/instance: my-ingress
+    app.kubernetes.io/version: "1.10.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: serviceaccount
+    ingress.controller: node01-private
+---
+# Source: multi-node-ingress/templates/rbac.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: nginx-ingress-serviceaccount
+  namespace: ingress-node01-public
+  labels:
+    helm.sh/chart: multi-node-ingress-0.1.0
+    app.kubernetes.io/name: multi-node-ingress
+    app.kubernetes.io/instance: my-ingress
+    app.kubernetes.io/version: "1.10.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: serviceaccount
+    ingress.controller: node01-public
+---
+# Source: multi-node-ingress/templates/rbac.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: nginx-ingress-serviceaccount
+  namespace: ingress-node02-private
+  labels:
+    helm.sh/chart: multi-node-ingress-0.1.0
+    app.kubernetes.io/name: multi-node-ingress
+    app.kubernetes.io/instance: my-ingress
+    app.kubernetes.io/version: "1.10.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: serviceaccount
+    ingress.controller: node02-private
+---
+# Source: multi-node-ingress/templates/rbac.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: nginx-ingress-serviceaccount
+  namespace: ingress-node02-public
+  labels:
+    helm.sh/chart: multi-node-ingress-0.1.0
+    app.kubernetes.io/name: multi-node-ingress
+    app.kubernetes.io/instance: my-ingress
+    app.kubernetes.io/version: "1.10.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: serviceaccount
+    ingress.controller: node02-public
+---
+# Source: multi-node-ingress/templates/configmaps.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-configuration
+  namespace: ingress-node01-private
+  labels:
+    helm.sh/chart: multi-node-ingress-0.1.0
+    app.kubernetes.io/name: multi-node-ingress
+    app.kubernetes.io/instance: my-ingress
+    app.kubernetes.io/version: "1.10.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: configmap
+    ingress.controller: node01-private
+data:
+  use-forwarded-headers: "true"
+  compute-full-forwarded-for: "true"
+  use-proxy-protocol: "false"
+---
+# Source: multi-node-ingress/templates/configmaps.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tcp-services
+  namespace: ingress-node01-private
+  labels:
+    helm.sh/chart: multi-node-ingress-0.1.0
+    app.kubernetes.io/name: multi-node-ingress
+    app.kubernetes.io/instance: my-ingress
+    app.kubernetes.io/version: "1.10.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: configmap
+    ingress.controller: node01-private
+data: {}
+  # TCP Services werden hier konfiguriert wenn benötigt
+  # Format: "nodePort": "namespace/service-name:port"
+---
+# Source: multi-node-ingress/templates/configmaps.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: udp-services
+  namespace: ingress-node01-private
+  labels:
+    helm.sh/chart: multi-node-ingress-0.1.0
+    app.kubernetes.io/name: multi-node-ingress
+    app.kubernetes.io/instance: my-ingress
+    app.kubernetes.io/version: "1.10.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: configmap
+    ingress.controller: node01-private
+data: {}
+  # UDP Services werden hier konfiguriert wenn benötigt
+  # Format: "nodePort": "namespace/service-name:port"
+---
+# Source: multi-node-ingress/templates/configmaps.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-configuration
+  namespace: ingress-node01-public
+  labels:
+    helm.sh/chart: multi-node-ingress-0.1.0
+    app.kubernetes.io/name: multi-node-ingress
+    app.kubernetes.io/instance: my-ingress
+    app.kubernetes.io/version: "1.10.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: configmap
+    ingress.controller: node01-public
+data:
+  use-forwarded-headers: "true"
+  compute-full-forwarded-for: "true"
+  use-proxy-protocol: "false"
+---
+# Source: multi-node-ingress/templates/configmaps.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tcp-services
+  namespace: ingress-node01-public
+  labels:
+    helm.sh/chart: multi-node-ingress-0.1.0
+    app.kubernetes.io/name: multi-node-ingress
+    app.kubernetes.io/instance: my-ingress
+    app.kubernetes.io/version: "1.10.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: configmap
+    ingress.controller: node01-public
+data: {}
+  # TCP Services werden hier konfiguriert wenn benötigt
+  # Format: "nodePort": "namespace/service-name:port"
+---
+# Source: multi-node-ingress/templates/configmaps.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: udp-services
+  namespace: ingress-node01-public
+  labels:
+    helm.sh/chart: multi-node-ingress-0.1.0
+    app.kubernetes.io/name: multi-node-ingress
+    app.kubernetes.io/instance: my-ingress
+    app.kubernetes.io/version: "1.10.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: configmap
+    ingress.controller: node01-public
+data: {}
+  # UDP Services werden hier konfiguriert wenn benötigt
+  # Format: "nodePort": "namespace/service-name:port"
+---
+# Source: multi-node-ingress/templates/configmaps.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-configuration
+  namespace: ingress-node02-private
+  labels:
+    helm.sh/chart: multi-node-ingress-0.1.0
+    app.kubernetes.io/name: multi-node-ingress
+    app.kubernetes.io/instance: my-ingress
+    app.kubernetes.io/version: "1.10.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: configmap
+    ingress.controller: node02-private
+data:
+  use-forwarded-headers: "true"
+  compute-full-forwarded-for: "true"
+  use-proxy-protocol: "false"
+---
+# Source: multi-node-ingress/templates/configmaps.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tcp-services
+  namespace: ingress-node02-private
+  labels:
+    helm.sh/chart: multi-node-ingress-0.1.0
+    app.kubernetes.io/name: multi-node-ingress
+    app.kubernetes.io/instance: my-ingress
+    app.kubernetes.io/version: "1.10.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: configmap
+    ingress.controller: node02-private
+data: {}
+  # TCP Services werden hier konfiguriert wenn benötigt
+  # Format: "nodePort": "namespace/service-name:port"
+---
+# Source: multi-node-ingress/templates/configmaps.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: udp-services
+  namespace: ingress-node02-private
+  labels:
+    helm.sh/chart: multi-node-ingress-0.1.0
+    app.kubernetes.io/name: multi-node-ingress
+    app.kubernetes.io/instance: my-ingress
+    app.kubernetes.io/version: "1.10.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: configmap
+    ingress.controller: node02-private
+data: {}
+  # UDP Services werden hier konfiguriert wenn benötigt
+  # Format: "nodePort": "namespace/service-name:port"
+---
+# Source: multi-node-ingress/templates/configmaps.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-configuration
+  namespace: ingress-node02-public
+  labels:
+    helm.sh/chart: multi-node-ingress-0.1.0
+    app.kubernetes.io/name: multi-node-ingress
+    app.kubernetes.io/instance: my-ingress
+    app.kubernetes.io/version: "1.10.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: configmap
+    ingress.controller: node02-public
+data:
+  use-forwarded-headers: "true"
+  compute-full-forwarded-for: "true"
+  use-proxy-protocol: "false"
+---
+# Source: multi-node-ingress/templates/configmaps.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tcp-services
+  namespace: ingress-node02-public
+  labels:
+    helm.sh/chart: multi-node-ingress-0.1.0
+    app.kubernetes.io/name: multi-node-ingress
+    app.kubernetes.io/instance: my-ingress
+    app.kubernetes.io/version: "1.10.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: configmap
+    ingress.controller: node02-public
+data: {}
+  # TCP Services werden hier konfiguriert wenn benötigt
+  # Format: "nodePort": "namespace/service-name:port"
+---
+# Source: multi-node-ingress/templates/configmaps.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: udp-services
+  namespace: ingress-node02-public
+  labels:
+    helm.sh/chart: multi-node-ingress-0.1.0
+    app.kubernetes.io/name: multi-node-ingress
+    app.kubernetes.io/instance: my-ingress
+    app.kubernetes.io/version: "1.10.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: configmap
+    ingress.controller: node02-public
+data: {}
+  # UDP Services werden hier konfiguriert wenn benötigt
+  # Format: "nodePort": "namespace/service-name:port"
+---
+# Source: multi-node-ingress/templates/rbac.yaml
+# ClusterRole (einmal für alle)
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: nginx-ingress-clusterrole
+  labels:
+    helm.sh/chart: multi-node-ingress-0.1.0
+    app.kubernetes.io/name: multi-node-ingress
+    app.kubernetes.io/instance: my-ingress
+    app.kubernetes.io/version: "1.10.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: clusterrole
+rules:
+- apiGroups: [""]
+  resources: ["configmaps", "endpoints", "nodes", "pods", "secrets", "namespaces"]
+  verbs: ["list", "watch", "get"]
+- apiGroups: [""]
+  resources: ["services"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["events"]
+  verbs: ["create", "patch"]
+- apiGroups: ["extensions", "networking.k8s.io"]
+  resources: ["ingresses"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["extensions", "networking.k8s.io"]
+  resources: ["ingresses/status"]
+  verbs: ["update"]
+- apiGroups: ["networking.k8s.io"]
+  resources: ["ingressclasses"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["configmaps"]
+  resourceNames: ["ingress-controller-leader"]
+  verbs: ["get", "update"]
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["create"]
+- apiGroups: ["coordination.k8s.io"]
+  resources: ["leases"]
+  verbs: ["create", "update", "get", "list", "watch"]
+- apiGroups: ["discovery.k8s.io"]
+  resources: ["endpointslices"]
+  verbs: ["list", "watch", "get"]
+
+# Namespace-spezifische Roles
+---
+# Source: multi-node-ingress/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: nginx-ingress-clusterrole-binding-node01-private
+  labels:
+    helm.sh/chart: multi-node-ingress-0.1.0
+    app.kubernetes.io/name: multi-node-ingress
+    app.kubernetes.io/instance: my-ingress
+    app.kubernetes.io/version: "1.10.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: clusterrolebinding
+    ingress.controller: node01-private
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: nginx-ingress-clusterrole
+subjects:
+- kind: ServiceAccount
+  name: nginx-ingress-serviceaccount
+  namespace: ingress-node01-private
+---
+# Source: multi-node-ingress/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: nginx-ingress-clusterrole-binding-node01-public
+  labels:
+    helm.sh/chart: multi-node-ingress-0.1.0
+    app.kubernetes.io/name: multi-node-ingress
+    app.kubernetes.io/instance: my-ingress
+    app.kubernetes.io/version: "1.10.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: clusterrolebinding
+    ingress.controller: node01-public
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: nginx-ingress-clusterrole
+subjects:
+- kind: ServiceAccount
+  name: nginx-ingress-serviceaccount
+  namespace: ingress-node01-public
+---
+# Source: multi-node-ingress/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: nginx-ingress-clusterrole-binding-node02-private
+  labels:
+    helm.sh/chart: multi-node-ingress-0.1.0
+    app.kubernetes.io/name: multi-node-ingress
+    app.kubernetes.io/instance: my-ingress
+    app.kubernetes.io/version: "1.10.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: clusterrolebinding
+    ingress.controller: node02-private
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: nginx-ingress-clusterrole
+subjects:
+- kind: ServiceAccount
+  name: nginx-ingress-serviceaccount
+  namespace: ingress-node02-private
+---
+# Source: multi-node-ingress/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: nginx-ingress-clusterrole-binding-node02-public
+  labels:
+    helm.sh/chart: multi-node-ingress-0.1.0
+    app.kubernetes.io/name: multi-node-ingress
+    app.kubernetes.io/instance: my-ingress
+    app.kubernetes.io/version: "1.10.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: clusterrolebinding
+    ingress.controller: node02-public
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: nginx-ingress-clusterrole
+subjects:
+- kind: ServiceAccount
+  name: nginx-ingress-serviceaccount
+  namespace: ingress-node02-public
+
+# RoleBindings
+---
+# Source: multi-node-ingress/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: nginx-ingress-role
+  namespace: ingress-node01-private
+  labels:
+    helm.sh/chart: multi-node-ingress-0.1.0
+    app.kubernetes.io/name: multi-node-ingress
+    app.kubernetes.io/instance: my-ingress
+    app.kubernetes.io/version: "1.10.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: role
+    ingress.controller: node01-private
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["get", "list", "watch", "create", "update", "patch"]
+- apiGroups: [""]
+  resources: ["endpoints"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["events"]
+  verbs: ["create", "patch"]
+---
+# Source: multi-node-ingress/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: nginx-ingress-role
+  namespace: ingress-node01-public
+  labels:
+    helm.sh/chart: multi-node-ingress-0.1.0
+    app.kubernetes.io/name: multi-node-ingress
+    app.kubernetes.io/instance: my-ingress
+    app.kubernetes.io/version: "1.10.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: role
+    ingress.controller: node01-public
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["get", "list", "watch", "create", "update", "patch"]
+- apiGroups: [""]
+  resources: ["endpoints"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["events"]
+  verbs: ["create", "patch"]
+---
+# Source: multi-node-ingress/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: nginx-ingress-role
+  namespace: ingress-node02-private
+  labels:
+    helm.sh/chart: multi-node-ingress-0.1.0
+    app.kubernetes.io/name: multi-node-ingress
+    app.kubernetes.io/instance: my-ingress
+    app.kubernetes.io/version: "1.10.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: role
+    ingress.controller: node02-private
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["get", "list", "watch", "create", "update", "patch"]
+- apiGroups: [""]
+  resources: ["endpoints"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["events"]
+  verbs: ["create", "patch"]
+---
+# Source: multi-node-ingress/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: nginx-ingress-role
+  namespace: ingress-node02-public
+  labels:
+    helm.sh/chart: multi-node-ingress-0.1.0
+    app.kubernetes.io/name: multi-node-ingress
+    app.kubernetes.io/instance: my-ingress
+    app.kubernetes.io/version: "1.10.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: role
+    ingress.controller: node02-public
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["get", "list", "watch", "create", "update", "patch"]
+- apiGroups: [""]
+  resources: ["endpoints"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: [""]
+  resources: ["events"]
+  verbs: ["create", "patch"]
+
+# ClusterRoleBindings
+---
+# Source: multi-node-ingress/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: nginx-ingress-role-binding
+  namespace: ingress-node01-private
+  labels:
+    helm.sh/chart: multi-node-ingress-0.1.0
+    app.kubernetes.io/name: multi-node-ingress
+    app.kubernetes.io/instance: my-ingress
+    app.kubernetes.io/version: "1.10.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: rolebinding
+    ingress.controller: node01-private
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: nginx-ingress-role
+subjects:
+- kind: ServiceAccount
+  name: nginx-ingress-serviceaccount
+  namespace: ingress-node01-private
+---
+# Source: multi-node-ingress/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: nginx-ingress-role-binding
+  namespace: ingress-node01-public
+  labels:
+    helm.sh/chart: multi-node-ingress-0.1.0
+    app.kubernetes.io/name: multi-node-ingress
+    app.kubernetes.io/instance: my-ingress
+    app.kubernetes.io/version: "1.10.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: rolebinding
+    ingress.controller: node01-public
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: nginx-ingress-role
+subjects:
+- kind: ServiceAccount
+  name: nginx-ingress-serviceaccount
+  namespace: ingress-node01-public
+---
+# Source: multi-node-ingress/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: nginx-ingress-role-binding
+  namespace: ingress-node02-private
+  labels:
+    helm.sh/chart: multi-node-ingress-0.1.0
+    app.kubernetes.io/name: multi-node-ingress
+    app.kubernetes.io/instance: my-ingress
+    app.kubernetes.io/version: "1.10.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: rolebinding
+    ingress.controller: node02-private
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: nginx-ingress-role
+subjects:
+- kind: ServiceAccount
+  name: nginx-ingress-serviceaccount
+  namespace: ingress-node02-private
+---
+# Source: multi-node-ingress/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: nginx-ingress-role-binding
+  namespace: ingress-node02-public
+  labels:
+    helm.sh/chart: multi-node-ingress-0.1.0
+    app.kubernetes.io/name: multi-node-ingress
+    app.kubernetes.io/instance: my-ingress
+    app.kubernetes.io/version: "1.10.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: rolebinding
+    ingress.controller: node02-public
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: nginx-ingress-role
+subjects:
+- kind: ServiceAccount
+  name: nginx-ingress-serviceaccount
+  namespace: ingress-node02-public
+---
+# Source: multi-node-ingress/templates/services.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: ingress-nginx-controller
+  namespace: ingress-node01-private
+  labels:
+    helm.sh/chart: multi-node-ingress-0.1.0
+    app.kubernetes.io/name: multi-node-ingress
+    app.kubernetes.io/instance: my-ingress
+    app.kubernetes.io/version: "1.10.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: controller
+    ingress.controller: node01-private
+spec:
+  type: NodePort
+  ports:
+  
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 80
+    nodePort: 30082
+  
+  - name: https
+    port: 443
+    protocol: TCP
+    targetPort: 443
+    nodePort: 30445
+  
+  - name: http8080
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+    nodePort: 32080
+  
+  - name: dns53
+    port: 53
+    protocol: UDP
+    targetPort: 53
+    nodePort: 30053
+  
+  selector:
+    app.kubernetes.io/name: ingress-nginx
+    app.kubernetes.io/instance: ingress-nginx-node01-private
+    app.kubernetes.io/component: controller
+  externalIPs:
+  - 10.0.1.16
+---
+# Source: multi-node-ingress/templates/services.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: ingress-nginx-controller
+  namespace: ingress-node01-public
+  labels:
+    helm.sh/chart: multi-node-ingress-0.1.0
+    app.kubernetes.io/name: multi-node-ingress
+    app.kubernetes.io/instance: my-ingress
+    app.kubernetes.io/version: "1.10.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: controller
+    ingress.controller: node01-public
+spec:
+  type: NodePort
+  ports:
+  
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 80
+    nodePort: 30080
+  
+  - name: https
+    port: 443
+    protocol: TCP
+    targetPort: 443
+    nodePort: 30443
+  
+  selector:
+    app.kubernetes.io/name: ingress-nginx
+    app.kubernetes.io/instance: ingress-nginx-node01-public
+    app.kubernetes.io/component: controller
+  externalIPs:
+  - 91.99.151.211
+---
+# Source: multi-node-ingress/templates/services.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: ingress-nginx-controller
+  namespace: ingress-node02-private
+  labels:
+    helm.sh/chart: multi-node-ingress-0.1.0
+    app.kubernetes.io/name: multi-node-ingress
+    app.kubernetes.io/instance: my-ingress
+    app.kubernetes.io/version: "1.10.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: controller
+    ingress.controller: node02-private
+spec:
+  type: NodePort
+  ports:
+  
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 80
+    nodePort: 30083
+  
+  - name: https
+    port: 443
+    protocol: TCP
+    targetPort: 443
+    nodePort: 30446
+  
+  selector:
+    app.kubernetes.io/name: ingress-nginx
+    app.kubernetes.io/instance: ingress-nginx-node02-private
+    app.kubernetes.io/component: controller
+  externalIPs:
+  - 10.0.1.17
+---
+# Source: multi-node-ingress/templates/services.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: ingress-nginx-controller
+  namespace: ingress-node02-public
+  labels:
+    helm.sh/chart: multi-node-ingress-0.1.0
+    app.kubernetes.io/name: multi-node-ingress
+    app.kubernetes.io/instance: my-ingress
+    app.kubernetes.io/version: "1.10.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: controller
+    ingress.controller: node02-public
+spec:
+  type: NodePort
+  ports:
+  
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 80
+    nodePort: 30081
+  
+  - name: https
+    port: 443
+    protocol: TCP
+    targetPort: 443
+    nodePort: 30444
+  
+  selector:
+    app.kubernetes.io/name: ingress-nginx
+    app.kubernetes.io/instance: ingress-nginx-node02-public
+    app.kubernetes.io/component: controller
+  externalIPs:
+  - 188.245.217.191
+---
+# Source: multi-node-ingress/templates/deployments.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-ingress-controller
+  namespace: ingress-node01-private
+  labels:
+    helm.sh/chart: multi-node-ingress-0.1.0
+    app.kubernetes.io/name: multi-node-ingress
+    app.kubernetes.io/instance: my-ingress
+    app.kubernetes.io/version: "1.10.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: controller
+    ingress.controller: node01-private
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ingress-nginx
+      app.kubernetes.io/instance: ingress-nginx-node01-private
+      app.kubernetes.io/component: controller
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: ingress-nginx
+        app.kubernetes.io/instance: ingress-nginx-node01-private
+        app.kubernetes.io/component: controller
+    spec:
+      serviceAccountName: nginx-ingress-serviceaccount
+      nodeSelector:
+        kubernetes.io/hostname: node01
+      containers:
+      - name: controller
+        image: registry.k8s.io/ingress-nginx/controller:v1.10.0
+        args:
+        - /nginx-ingress-controller
+        - --configmap=$(POD_NAMESPACE)/nginx-configuration
+        - --tcp-services-configmap=$(POD_NAMESPACE)/tcp-services
+        - --udp-services-configmap=$(POD_NAMESPACE)/udp-services
+        - --publish-service=$(POD_NAMESPACE)/ingress-nginx-controller
+        - --annotations-prefix=nginx.ingress.kubernetes.io
+        - --ingress-class=node01-private
+        - --controller-class=k8s.io/ingress-nginx-node01-private
+        - --election-id=ingress-controller-leader-node01-private
+        securityContext:
+          allowPrivilegeEscalation: true
+          runAsUser: 101
+          capabilities:
+            drop:
+            - ALL
+            add:
+            - NET_BIND_SERVICE
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: LD_PRELOAD
+          value: /usr/local/lib/libmimalloc.so
+        ports:
+        - name: http
+          containerPort: 80
+          protocol: TCP
+        - name: https
+          containerPort: 443
+          protocol: TCP
+        - name: http8080
+          containerPort: 8080
+          protocol: TCP
+        - name: dns53
+          containerPort: 53
+          protocol: UDP
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /healthz
+            port: 10254
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /healthz
+            port: 10254
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+---
+# Source: multi-node-ingress/templates/deployments.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-ingress-controller
+  namespace: ingress-node01-public
+  labels:
+    helm.sh/chart: multi-node-ingress-0.1.0
+    app.kubernetes.io/name: multi-node-ingress
+    app.kubernetes.io/instance: my-ingress
+    app.kubernetes.io/version: "1.10.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: controller
+    ingress.controller: node01-public
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ingress-nginx
+      app.kubernetes.io/instance: ingress-nginx-node01-public
+      app.kubernetes.io/component: controller
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: ingress-nginx
+        app.kubernetes.io/instance: ingress-nginx-node01-public
+        app.kubernetes.io/component: controller
+    spec:
+      serviceAccountName: nginx-ingress-serviceaccount
+      nodeSelector:
+        kubernetes.io/hostname: node01
+      containers:
+      - name: controller
+        image: registry.k8s.io/ingress-nginx/controller:v1.10.0
+        args:
+        - /nginx-ingress-controller
+        - --configmap=$(POD_NAMESPACE)/nginx-configuration
+        - --tcp-services-configmap=$(POD_NAMESPACE)/tcp-services
+        - --udp-services-configmap=$(POD_NAMESPACE)/udp-services
+        - --publish-service=$(POD_NAMESPACE)/ingress-nginx-controller
+        - --annotations-prefix=nginx.ingress.kubernetes.io
+        - --ingress-class=node01-public
+        - --controller-class=k8s.io/ingress-nginx-node01-public
+        - --election-id=ingress-controller-leader-node01-public
+        securityContext:
+          allowPrivilegeEscalation: true
+          runAsUser: 101
+          capabilities:
+            drop:
+            - ALL
+            add:
+            - NET_BIND_SERVICE
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: LD_PRELOAD
+          value: /usr/local/lib/libmimalloc.so
+        ports:
+        - name: http
+          containerPort: 80
+          protocol: TCP
+        - name: https
+          containerPort: 443
+          protocol: TCP
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /healthz
+            port: 10254
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /healthz
+            port: 10254
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+---
+# Source: multi-node-ingress/templates/deployments.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-ingress-controller
+  namespace: ingress-node02-private
+  labels:
+    helm.sh/chart: multi-node-ingress-0.1.0
+    app.kubernetes.io/name: multi-node-ingress
+    app.kubernetes.io/instance: my-ingress
+    app.kubernetes.io/version: "1.10.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: controller
+    ingress.controller: node02-private
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ingress-nginx
+      app.kubernetes.io/instance: ingress-nginx-node02-private
+      app.kubernetes.io/component: controller
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: ingress-nginx
+        app.kubernetes.io/instance: ingress-nginx-node02-private
+        app.kubernetes.io/component: controller
+    spec:
+      serviceAccountName: nginx-ingress-serviceaccount
+      nodeSelector:
+        kubernetes.io/hostname: node02
+      containers:
+      - name: controller
+        image: registry.k8s.io/ingress-nginx/controller:v1.10.0
+        args:
+        - /nginx-ingress-controller
+        - --configmap=$(POD_NAMESPACE)/nginx-configuration
+        - --tcp-services-configmap=$(POD_NAMESPACE)/tcp-services
+        - --udp-services-configmap=$(POD_NAMESPACE)/udp-services
+        - --publish-service=$(POD_NAMESPACE)/ingress-nginx-controller
+        - --annotations-prefix=nginx.ingress.kubernetes.io
+        - --ingress-class=node02-private
+        - --controller-class=k8s.io/ingress-nginx-node02-private
+        - --election-id=ingress-controller-leader-node02-private
+        securityContext:
+          allowPrivilegeEscalation: true
+          runAsUser: 101
+          capabilities:
+            drop:
+            - ALL
+            add:
+            - NET_BIND_SERVICE
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: LD_PRELOAD
+          value: /usr/local/lib/libmimalloc.so
+        ports:
+        - name: http
+          containerPort: 80
+          protocol: TCP
+        - name: https
+          containerPort: 443
+          protocol: TCP
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /healthz
+            port: 10254
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /healthz
+            port: 10254
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+---
+# Source: multi-node-ingress/templates/deployments.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-ingress-controller
+  namespace: ingress-node02-public
+  labels:
+    helm.sh/chart: multi-node-ingress-0.1.0
+    app.kubernetes.io/name: multi-node-ingress
+    app.kubernetes.io/instance: my-ingress
+    app.kubernetes.io/version: "1.10.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: controller
+    ingress.controller: node02-public
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ingress-nginx
+      app.kubernetes.io/instance: ingress-nginx-node02-public
+      app.kubernetes.io/component: controller
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: ingress-nginx
+        app.kubernetes.io/instance: ingress-nginx-node02-public
+        app.kubernetes.io/component: controller
+    spec:
+      serviceAccountName: nginx-ingress-serviceaccount
+      nodeSelector:
+        kubernetes.io/hostname: node02
+      containers:
+      - name: controller
+        image: registry.k8s.io/ingress-nginx/controller:v1.10.0
+        args:
+        - /nginx-ingress-controller
+        - --configmap=$(POD_NAMESPACE)/nginx-configuration
+        - --tcp-services-configmap=$(POD_NAMESPACE)/tcp-services
+        - --udp-services-configmap=$(POD_NAMESPACE)/udp-services
+        - --publish-service=$(POD_NAMESPACE)/ingress-nginx-controller
+        - --annotations-prefix=nginx.ingress.kubernetes.io
+        - --ingress-class=node02-public
+        - --controller-class=k8s.io/ingress-nginx-node02-public
+        - --election-id=ingress-controller-leader-node02-public
+        securityContext:
+          allowPrivilegeEscalation: true
+          runAsUser: 101
+          capabilities:
+            drop:
+            - ALL
+            add:
+            - NET_BIND_SERVICE
+        env:
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: LD_PRELOAD
+          value: /usr/local/lib/libmimalloc.so
+        ports:
+        - name: http
+          containerPort: 80
+          protocol: TCP
+        - name: https
+          containerPort: 443
+          protocol: TCP
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /healthz
+            port: 10254
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /healthz
+            port: 10254
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+---
+# Source: multi-node-ingress/templates/ingressclass.yaml
+apiVersion: networking.k8s.io/v1
+kind: IngressClass
+metadata:
+  name: node01-private
+  labels:
+    helm.sh/chart: multi-node-ingress-0.1.0
+    app.kubernetes.io/name: multi-node-ingress
+    app.kubernetes.io/instance: my-ingress
+    app.kubernetes.io/version: "1.10.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: ingressclass
+    ingress.controller: node01-private
+spec:
+  controller: k8s.io/ingress-nginx-node01-private
+---
+# Source: multi-node-ingress/templates/ingressclass.yaml
+apiVersion: networking.k8s.io/v1
+kind: IngressClass
+metadata:
+  name: node01-public
+  labels:
+    helm.sh/chart: multi-node-ingress-0.1.0
+    app.kubernetes.io/name: multi-node-ingress
+    app.kubernetes.io/instance: my-ingress
+    app.kubernetes.io/version: "1.10.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: ingressclass
+    ingress.controller: node01-public
+spec:
+  controller: k8s.io/ingress-nginx-node01-public
+---
+# Source: multi-node-ingress/templates/ingressclass.yaml
+apiVersion: networking.k8s.io/v1
+kind: IngressClass
+metadata:
+  name: node02-private
+  labels:
+    helm.sh/chart: multi-node-ingress-0.1.0
+    app.kubernetes.io/name: multi-node-ingress
+    app.kubernetes.io/instance: my-ingress
+    app.kubernetes.io/version: "1.10.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: ingressclass
+    ingress.controller: node02-private
+spec:
+  controller: k8s.io/ingress-nginx-node02-private
+---
+# Source: multi-node-ingress/templates/ingressclass.yaml
+apiVersion: networking.k8s.io/v1
+kind: IngressClass
+metadata:
+  name: node02-public
+  labels:
+    helm.sh/chart: multi-node-ingress-0.1.0
+    app.kubernetes.io/name: multi-node-ingress
+    app.kubernetes.io/instance: my-ingress
+    app.kubernetes.io/version: "1.10.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: ingressclass
+    ingress.controller: node02-public
+spec:
+  controller: k8s.io/ingress-nginx-node02-public
+---
+# Source: multi-node-ingress/templates/ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: argocd-server-node02-public
+  namespace: argocd
+  labels:
+    helm.sh/chart: multi-node-ingress-0.1.0
+    app.kubernetes.io/name: multi-node-ingress
+    app.kubernetes.io/instance: my-ingress
+    app.kubernetes.io/version: "1.10.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: ingress
+    ingress.controller: node02-public
+    service.name: argocd-server
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+    nginx.ingress.kubernetes.io/ssl-passthrough: "true"
+spec:
+  ingressClassName: node02-public
+  tls:
+  - hosts:
+    - node02.kube.gamma.red
+    secretName: argocd-server-node02-public-tls
+  rules:
+  - host: node02.kube.gamma.red
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: argocd-server
+            port:
+              number: 443
+  # IP-basierter Zugriff über Controller IP
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: argocd-server
+            port:
+              number: 443
+---
+# Source: multi-node-ingress/templates/ingress.yaml
+# Generiere Ingress Ressourcen für alle Services und ihre zugewiesenen Controller
+---
+# Source: multi-node-ingress/templates/rbac.yaml
+# ServiceAccounts

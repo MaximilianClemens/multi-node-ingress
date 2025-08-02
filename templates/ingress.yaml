@@ -23,6 +23,23 @@ metadata:
     {{- end }}
 spec:
   ingressClassName: {{ $controller.ingressClass }}
+  {{- if $service.tls }}
+  tls:
+  {{- range $service.tls }}
+  - hosts:
+    {{- range .hosts }}
+    - {{ . }}
+    {{- end }}
+    secretName: {{ .secretName }}
+  {{- end }}
+  {{- else if (and $service.hosts (index $service.annotations "cert-manager.io/cluster-issuer")) }}
+  tls:
+  - hosts:
+    {{- range $service.hosts }}
+    - {{ . }}
+    {{- end }}
+    secretName: {{ $service.name }}-{{ $controllerName }}-tls
+  {{- end }}
   rules:
   {{- range $service.hosts }}
   - host: {{ . }}
