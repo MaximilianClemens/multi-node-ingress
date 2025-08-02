@@ -104,52 +104,15 @@ nginx:
 
 # Service Definitionen mit dynamischer Controller-Bindung
 ingressServices:
-  # Demo App - läuft auf beiden öffentlichen Controllern
-  - name: "demo-app"
-    namespace: "default"
+  # ArgoCD Server - läuft auf öffentlichem Controller
+  - name: "argocd-server"
+    namespace: "argocd"
     port: 80
     enabled: true
     ingressControllers:
-      - node01-public
       - node02-public
     hosts:
-      - "demo.kube.gamma.red"
-      - "node01.kube.gamma.red"  # Wird nur bei node01-public verwendet
-      - "node02.kube.gamma.red"  # Wird nur bei node02-public verwendet
+      - "node02.kube.gamma.red"
     annotations:
       nginx.ingress.kubernetes.io/rewrite-target: /
       nginx.ingress.kubernetes.io/upstream-hash-by: "$remote_addr"
-
-  # API Service - nur auf privatem node01
-  - name: "api-service"
-    namespace: "default"  # Verwende default namespace für Demo
-    port: 8080
-    enabled: false  # Deaktiviert da Service nicht existiert
-    ingressControllers:
-      - node01-private
-    hosts:
-      - "api.internal.example.com"
-    annotations:
-      nginx.ingress.kubernetes.io/ssl-redirect: "true"
-      nginx.ingress.kubernetes.io/rate-limit: "100"
-      nginx.ingress.kubernetes.io/rate-limit-window: "1m"
-
-  # Monitoring - läuft auf beiden privaten Controllern
-  - name: "grafana"
-    namespace: "default"  # Verwende default namespace für Demo
-    port: 3000
-    enabled: false  # Deaktiviert da Service nicht existiert
-    ingressControllers:
-      - node01-private
-      - node02-private
-    hosts:
-      - "grafana.internal.example.com"
-    annotations:
-      nginx.ingress.kubernetes.io/auth-type: basic
-      nginx.ingress.kubernetes.io/auth-secret: grafana-basic-auth
-
-# Demo Application (wird automatisch erstellt wenn in ingressServices referenziert)
-demoApp:
-  enabled: true
-  replicas: 4
-  image: "nginx:alpine"
